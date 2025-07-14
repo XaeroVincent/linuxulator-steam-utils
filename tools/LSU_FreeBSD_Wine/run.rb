@@ -5,6 +5,8 @@ require 'fileutils'
 require_relative '../../bin/.utils'
 
 I386_PKG_ROOT = ENV['LSU_i386_PKG_ROOT'] || ENV['WINE_i386_ROOT'] || File.join(ENV['HOME'], '.i386-wine-pkg')
+WINE_PROTON_NAME = 'wine-proton-experimental'
+
 
 KNOWN_VERSIONS = {
    '9.0' => {appId: 2805730},
@@ -33,12 +35,12 @@ def set_up_files(*paths)
   end
 end
 
-wine64_bin = '/usr/local/wine-proton/bin/wine64'
-wine32_bin = File.join(I386_PKG_ROOT, 'usr/local/wine-proton/bin/wine')
+wine64_bin = "/usr/local/#{WINE_PROTON_NAME}/bin/wine64"
+wine32_bin = File.join(I386_PKG_ROOT, "usr/local/#{WINE_PROTON_NAME}/bin/wine")
 
 if !File.exist?(wine64_bin)
   perr "#{wine64_bin} doesn't exist!"
-  perr "Install emulators/wine-proton first."
+  perr "Install emulators/#{WINE_PROTON_NAME} first."
   exit(1)
 end
 
@@ -60,8 +62,8 @@ if wine64_version != wine32_version
 end
 
 # we expect a PE Wine build
-raise if !File.exist?('/usr/local/wine-proton/lib/wine/x86_64-windows')
-raise if !File.exist?(File.join(I386_PKG_ROOT, 'usr/local/wine-proton/lib/wine/i386-windows'))
+raise if !File.exist?("/usr/local/#{WINE_PROTON_NAME}/lib/wine/x86_64-windows")
+raise if !File.exist?(File.join(I386_PKG_ROOT, "usr/local/#{WINE_PROTON_NAME}/lib/wine/i386-windows"))
 
 PROTON_VERSION = wine64_version
 
@@ -90,7 +92,7 @@ def set_up()
         when :symlinks
           pwarn "Creating symlinks..."
         when :manifest
-          pwarn "Registering emulators/wine-proton as a compatibility tool..."
+          pwarn "Registering emulators/#{WINE_PROTON_NAME} as a compatibility tool..."
         when :done
           if $setup_steps.empty?
             pwarn "Nothing to do"
@@ -178,7 +180,7 @@ def set_up()
           end
 
           Dir.chdir(File.join("#{target_dir}.tmp", 'lib/wine/i386-windows')) do
-            for file in Dir[File.join(I386_PKG_ROOT, 'usr/local/wine-proton/lib/wine/i386-windows/*.{cpl,dll,drv,exe,ocx}')]
+            for file in Dir[File.join(I386_PKG_ROOT, "usr/local/#{WINE_PROTON_NAME}/lib/wine/i386-windows/*.{cpl,dll,drv,exe,ocx}")]
               if !File.exist?(File.basename(file))
                 set_setup_state(:symlinks)
                 safe_system('ln', '-s', file)
@@ -187,7 +189,7 @@ def set_up()
           end
 
           Dir.chdir(File.join("#{target_dir}.tmp", "#{PROTON_VERSION.to_i < 10 ? 'lib64' : 'lib'}/wine/x86_64-windows")) do
-            for file in Dir['/usr/local/wine-proton/lib/wine/x86_64-windows/*.{cpl,dll,drv,exe,ocx}']
+            for file in Dir["/usr/local/#{WINE_PROTON_NAME}/lib/wine/x86_64-windows/*.{cpl,dll,drv,exe,ocx}"]
               if !File.exist?(File.basename(file))
                 set_setup_state(:symlinks)
                 safe_system('ln', '-s', file)
@@ -199,7 +201,7 @@ def set_up()
             set_setup_state(:symlinks)
             FileUtils.mkdir_p(target)
             Dir.chdir(target) do
-              for file in Dir['/usr/local/wine-proton/bin/{msidb,wine,wine64,wineserver}']
+              for file in Dir["/usr/local/#{WINE_PROTON_NAME}/bin/{msidb,wine,wine64,wineserver}"]
                 safe_system('ln', '-s', file)
               end
             end
@@ -210,7 +212,7 @@ def set_up()
               set_setup_state(:symlinks)
               FileUtils.mkdir_p(target)
               Dir.chdir(target) do
-                for file in Dir['/usr/local/wine-proton/bin-wow64/{msidb,wine,wineserver}']
+                for file in Dir["/usr/local/#{WINE_PROTON_NAME}/bin-wow64/{msidb,wine,wineserver}"]
                   safe_system('ln', '-s', file)
                 end
               end
