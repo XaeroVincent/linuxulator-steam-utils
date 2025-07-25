@@ -7,7 +7,6 @@ require_relative '../../bin/.utils'
 I386_PKG_ROOT = ENV['LSU_i386_PKG_ROOT'] || ENV['WINE_i386_ROOT'] || File.join(ENV['HOME'], '.i386-wine-pkg')
 WINE_PROTON_NAME = 'wine-proton-experimental'
 
-
 KNOWN_VERSIONS = {
    '9.0' => {appId: 2805730},
   '10.0' => {appId: 3658110}
