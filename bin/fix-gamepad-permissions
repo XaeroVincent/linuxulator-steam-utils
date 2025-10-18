@@ -13,15 +13,6 @@ def run(cmd)
   end
 end
 
-run('kldunload uhid') if system('kldstat -q -n uhid')
-
-run('kldload hgame ')    if !system('kldstat -q -n hgame')
-run('kldload hidraw')    if !system('kldstat -q -n hidraw')
-run('kldload ps4dshock') if !system('kldstat -q -n ps4dshock')
-run('kldload xb360gp')   if !system('kldstat -q -n xb360gp')
-
-run('sysctl hw.usb.usbhid.enable=1')
-
 hidraw_devices = {}
 for line in `sysctl dev.hidraw`.lines
   if line =~ /^dev.hidraw.(\d+).(%desc|%driver|%location|%parent|%pnpinfo): (.*)$/
@@ -66,13 +57,13 @@ for m in mountpoints
   if m['fstype'] == 'devfs'
     for idx in weird_hid_devs
       path = File.join(m['node'], "hidraw#{idx}")
-      run(['chgrp', 'operator', path])
-      run(['chmod', 'g+rw',     path])
+      run(['chgrp', 'games', path])
+      run(['chmod', 'g+rw', path])
     end
     for idx in evdev_gamepads
       path = File.join(m['node'], "input/event#{idx}")
-      run(['chgrp', 'operator', path])
-      run(['chmod', 'g+rw',     path])
+      run(['chgrp', 'games', path])
+      run(['chmod', 'g+rw', path])
     end
   end
 end
