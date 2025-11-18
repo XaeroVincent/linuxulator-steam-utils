@@ -5,10 +5,10 @@ require 'fileutils'
 
 raise 'Never run this script as root!' if `id -u`.chomp == '0'
 
-STEAM_DIST_NAME = 'steam_1.0.0.84.tar.gz'
+STEAM_DIST_NAME = 'steam_1.0.0.85.tar.gz'
 
 SHA256 = {
-  'steam_1.0.0.84.tar.gz': '31fa762d58793f1aa8ea9df0122c3469c253fc8acb6daa7140fb7433fe077b44'
+  'steam_1.0.0.85.tar.gz': '7f2d374a2fb413ced5b8125151456219d918a255872b4bb77016cbccf38bb7f1'
 }
 
 DUMB_PERSON_FLAG = '--allow-stealing-my-passwords,-browser-history-and-ssh-keys'
