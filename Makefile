@@ -49,7 +49,7 @@ $(BUILD_DIR)/lib$(b)/fakenm/libnm-glib.so.4: $(BUILD_DIR)/lib$(b)/fakenm/libnm.s
 
 $(BUILD_DIR)/lib$(b)/fakepulse/libpulse.so.0: src/fakepulse.c
 	mkdir -p $(BUILD_DIR)/lib$(b)/fakepulse
-	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -o $(.TARGET) src/fakepulse.c
+	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -Wl,--version-script=src/libpulse.map -o $(.TARGET) src/fakepulse.c
 
 $(BUILD_DIR)/lib$(b)/fakeudev/libudev.so.0: src/fakeudev.c
 	mkdir -p $(BUILD_DIR)/lib$(b)/fakeudev

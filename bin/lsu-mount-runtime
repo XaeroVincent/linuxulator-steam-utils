@@ -417,3 +417,6 @@ for dir in dirs.sort
     mirror_mounts(mroot, dir)
   end
 end
+
+system("cp /compat/linux/usr/lib/libSPIRV-Tools.so $HOME/.steam/tmp/SteamLinuxRuntime_sniper/lib")
+system("cp /compat/linux/usr/lib64/libSPIRV-Tools.so $HOME/.steam/tmp/SteamLinuxRuntime_sniper/lib64")
