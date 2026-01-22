@@ -151,8 +151,6 @@ if try_mount('tmpfs', 'tmpfs', mroot, 'nocover')
             File.join(source_dir, 'lib{EGL,GL,GLESv1_CM,GLESv2,GLX,GLdispatch,OpenGL}.so*'),
             # linux-rl9-libdrm
             File.join(source_dir, 'lib{drm,drm_{amdgpu,intel,radeon}}.so*'),
-            # linux-rl9-spirv-tools
-            File.join(source_dir, 'libSPIRV-Tools.so*'),
             # linux-rl9-dri
             File.join(source_dir, 'lib{EGL_mesa,GLU,GLX_{mesa,system},VkLayer_*,gallium-*,gbm,glapi,glut,vulkan_{intel,lvp,radeon},xatracker}.so*'),
             # linux-rl9-spirv-tools
