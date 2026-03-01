@@ -122,7 +122,7 @@ if !requirements.empty?
   end
 
   if requirements.find{|req| req[0] == :ifnames}
-    perr "\nRun (as root) `sysctl compat.linux.use_real_ifnames=1`.\nAdd the setting to /etc/sysctl.conf to persist it."
+    perr "\nRun (as root) `sysctl compat.linux.use_real_ifnames=1`.\nAdd the setting to /etc/sysctl.kld.d/linux.conf to persist it."
   end
 
   if requirements.find{|req| req[0] == :nullfs}
