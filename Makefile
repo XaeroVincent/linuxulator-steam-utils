@@ -123,7 +123,7 @@ install:
  lxbin/xrandr \
  lxbin/zenity \
  $(PREFIX)/$(PROJECT)/lxbin
-.for t in LSU_FreeBSD_Wine LSU_FreeBSD_Wine_9 LSU_Proton_8_chroot LSU_Scout_chroot LSU_Sniper_chroot
+.for t in LSU_FreeBSD_Wine LSU_FreeBSD_Wine_11 LSU_FreeBSD_Wine_9 LSU_Proton_8_chroot LSU_Scout_chroot LSU_Sniper_chroot
 	install -d $(PREFIX)/$(PROJECT)/tools/$(t)
 	install -m 0644 tools/$(t)/compatibilitytool.vdf $(PREFIX)/$(PROJECT)/tools/$(t)
 	install -m 0644 tools/$(t)/toolmanifest.vdf      $(PREFIX)/$(PROJECT)/tools/$(t)
