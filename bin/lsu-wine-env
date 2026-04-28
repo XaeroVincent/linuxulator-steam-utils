@@ -6,7 +6,13 @@ require_relative '.utils'
 
 raise 'Don\'t run this script as root!' if `id -u`.chomp == '0'
 
-WINE_PKG_PREFIX = '/usr/local/wine-proton'
+if system('pkg query %v wine-proton-11 > /dev/null 2>&1')
+  WINE_PKG_PREFIX = '/usr/local/wine-proton-11'
+elsif system('pkg query %v wine-proton-9 > /dev/null 2>&1')
+  WINE_PKG_PREFIX = '/usr/local/wine-proton-9'
+else
+  WINE_PKG_PREFIX = '/usr/local/wine-proton'
+end
 
 def exec_with_wine_env(args)
 
