@@ -5,7 +5,7 @@
     "LSU_FreeBSD_Wine"
     {
       "install_path" "."
-      "display_name" "FreeBSD Wine (emulators/wine-proton)"
+      "display_name" "FreeBSD Proton 9.0 or 10.0 or Experimental (wine-proton)"
       "from_oslist"  "windows"
       "to_oslist"    "linux"
     }
