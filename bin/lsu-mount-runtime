@@ -138,6 +138,7 @@ if try_mount('tmpfs', 'tmpfs', mroot, 'nocover')
           File.join(EMUL_PATH, 'usr/lib')   => File.join(mroot, 'usr/lib/i386-linux-gnu')
         }
           mounts << mount('nullfs', File.join(source_dir, 'dri'), File.join(dest_dir, 'dri'))
+          mounts << mount('nullfs', File.join(source_dir, 'gbm'), File.join(dest_dir, 'gbm'))
 
           for source in Dir[
             # glibc
