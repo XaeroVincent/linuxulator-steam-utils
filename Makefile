@@ -58,29 +58,33 @@ $(BUILD_DIR)/lib$(b)/fakeudev/libudev.so.0: src/fakeudev.c
 $(BUILD_DIR)/lib$(b)/fakeudev/libudev.so.1: $(BUILD_DIR)/lib$(b)/fakeudev/libudev.so.0
 	ln -s libudev.so.0 $(.TARGET)
 
-$(BUILD_DIR)/lib$(b):
+$(BUILD_DIR)/lib$(b)/dummy-uvm.so: src/dummy-uvm.c
 	mkdir -p $(BUILD_DIR)/lib$(b)
-
-$(BUILD_DIR)/lib$(b)/dummy-uvm.so: src/dummy-uvm.c $(BUILD_DIR)/lib$(b)
 	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -o $(.TARGET) src/dummy-uvm.c -ldl
 
-$(BUILD_DIR)/lib$(b)/pathfix.so: src/pathfix.c $(BUILD_DIR)/lib$(b)
+$(BUILD_DIR)/lib$(b)/pathfix.so: src/pathfix.c
+	mkdir -p $(BUILD_DIR)/lib$(b)
 	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -o $(.TARGET) src/pathfix.c -ldl
 
-$(BUILD_DIR)/lib$(b)/protonfix.so: src/protonfix.c $(BUILD_DIR)/lib$(b)
+$(BUILD_DIR)/lib$(b)/protonfix.so: src/protonfix.c
+	mkdir -p $(BUILD_DIR)/lib$(b)
 	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -o $(.TARGET) src/protonfix.c -pthread -ldl
 
-$(BUILD_DIR)/lib$(b)/webfix.so: src/webfix.c $(BUILD_DIR)/lib$(b)
+$(BUILD_DIR)/lib$(b)/webfix.so: src/webfix.c
+	mkdir -p $(BUILD_DIR)/lib$(b)
 	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -o $(.TARGET) src/webfix.c -pthread -ldl -lm
 
-$(BUILD_DIR)/lib$(b)/noepollexcl.so: src/noepollexcl.c $(BUILD_DIR)/lib$(b)
+$(BUILD_DIR)/lib$(b)/noepollexcl.so: src/noepollexcl.c
+	mkdir -p $(BUILD_DIR)/lib$(b)
 	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -o $(.TARGET) src/noepollexcl.c -ldl
 
-$(BUILD_DIR)/lib$(b)/shmfix.so: src/shmfix.c $(BUILD_DIR)/lib$(b)
+$(BUILD_DIR)/lib$(b)/shmfix.so: src/shmfix.c
+	mkdir -p $(BUILD_DIR)/lib$(b)
 	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -o $(.TARGET) src/shmfix.c -ldl -lrt
 .endfor
 
-$(BUILD_DIR)/lib32/dt_init-fix.so: src/dt_init-fix.c $(BUILD_DIR)/lib32
+$(BUILD_DIR)/lib32/dt_init-fix.so: src/dt_init-fix.c
+	mkdir -p $(BUILD_DIR)/lib32
 	cc -m32 -mstack-alignment=16 -mstackrealign -std=c99 -Wall -Wextra -fPIC -shared -o $(.TARGET) src/dt_init-fix.c
 
 # we want to run this as the first command in a Linux chroot, hence -static
