@@ -80,9 +80,7 @@ void purge_reaper(const char* command) {
 char* modify_webhelper_command(const char* command) {
 
   char* format_str =
-#if 0
     "LD_PRELOAD=webfix.so "
-#endif
     "%s.patched' %s"
     " --no-sandbox"
     //" --enable-logging=stderr"
