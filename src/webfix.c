@@ -32,3 +32,34 @@ int cef_initialize(void* args, void* settings, void* application, void* windows_
 
   return orig_cef_initialize(args, settings, application, windows_sandbox_info);
 }
+
+// [xxxx/xxxxxx.xxxxxx:FATAL:proc_util.cc(97)] Check failed: . : No such file or directory (2)
+
+#include <sys/stat.h>
+
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+static int (*libc___fxstatat64)(int, int, const char*, struct stat64*, int) = NULL;
+
+int __fxstatat64(int ver, int dirfd, const char* path, struct stat64* stat_buf, int flags) {
+
+  if (!libc___fxstatat64) {
+    libc___fxstatat64 = dlsym(RTLD_NEXT, "__fxstatat64");
+  }
+
+  char link_buf[1024];
+  ssize_t count = readlinkat(dirfd, path, link_buf, sizeof(link_buf) - 1);
+  if (count != -1) {
+    link_buf[count] = '\0';
+    //~ fprintf(stderr, "link: %s -> %s\n", path, link_buf);
+    if (strcmp(link_buf, "anon_inode:[unknown]") == 0) {
+      return libc___fxstatat64(ver, AT_FDCWD, "/dev/null", stat_buf, flags);
+    }
+  }
+
+  return libc___fxstatat64(ver, dirfd, path, stat_buf, flags);
+}
