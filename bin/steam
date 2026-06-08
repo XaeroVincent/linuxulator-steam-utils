@@ -84,6 +84,10 @@ def check_requirements
     reqs << [:base, "binaries from Rocky Linux or compatible distro at #{EMUL_PATH}"]
   end
 
+  if system('sysctl -q dev.drm > /dev/null') && !`id -Gn`.split(' ').include?('video')
+    reqs << [:video, 'video group membership']
+  end
+
   reqs
 end
 
