@@ -11,18 +11,28 @@ SHA256 = {
   'steam_1.0.0.85.tar.gz': '7f2d374a2fb413ced5b8125151456219d918a255872b4bb77016cbccf38bb7f1'
 }
 
-DUMB_PERSON_FLAG = '--allow-stealing-my-passwords,-browser-history-and-ssh-keys'
-skip_sanity_check = ARGV.include?(DUMB_PERSON_FLAG)
+STDERR.puts <<MSG
 
-if !skip_sanity_check && `id -G`.split(' ').include?('0')
-  STDERR.puts <<MSG
-
-Please, consider setting up a dedicated OS user account for Steam.
-Otherwise each and every Steam game will have unrestricted access to your files.
-If you really couldn't care less, you can supress this message with
-#{DUMB_PERSON_FLAG} flag.
+Malware games have been known to infiltrate the Steam store on occassion.
+Please, consider setting up a dedicated OS user account or jail for Steam.
+Alternatively, consider backing up and moving personal and sensitive files
+(SSH keys, passwords, financial data) into an encrypted partition or folder.
+Steam will otherwise have unrestricted access to your home directory files.
 
 MSG
+
+print 'Do you want to continue with the installation? (Y/N): '
+user_input = gets.chomp.downcase
+
+case user_input
+when 'y'
+  STDERR.puts
+  STDERR.puts 'Installing...'
+when 'n'
+  exit(1)
+else
+  STDERR.puts
+  STDERR.puts 'Invalid input. Please enter Y or N.'
   exit(1)
 end
 
