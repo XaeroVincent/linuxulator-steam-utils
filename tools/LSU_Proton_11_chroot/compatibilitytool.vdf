@@ -1,0 +1,13 @@
+"compatibilitytools"
+{
+  "compat_tools"
+  {
+    "LSU_Proton_11_chroot"
+    {
+      "install_path" "."
+      "display_name" "LSU chroot with Proton 11"
+      "from_oslist"  "windows"
+      "to_oslist"    "linux"
+    }
+  }
+}
