@@ -10,7 +10,7 @@ SLR_NAME_OR_PATH = ARGV[0] || 'SteamLinuxRuntime_sniper'
 reqs = []
 
 EMUL_PATH = File.realdirpath(`sysctl -qn compat.linux.emul_path`).chomp
-if !(EMUL_PATH =~ /\/compat\/\w[\w\d]*/)
+if !(EMUL_PATH =~ /\/compat\/\w+/)
   reqs << "This script doesn't like your compat.linux.emul_path"
 end
 
@@ -133,6 +133,21 @@ if try_mount('tmpfs', 'tmpfs', mroot, 'nocover')
         FileUtils.ln_s('/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2', File.join(mroot, 'usr/lib64/ld-linux-x86-64.so.2'), force: true)
         FileUtils.ln_s('/usr/lib/i386-linux-gnu/ld-linux.so.2',          File.join(mroot, 'usr/lib/ld-linux.so.2'),          force: true)
 
+        # not quite true, but close enough
+        linux_base_glibc_ver    = max_symbol_version(File.join(EMUL_PATH, 'usr/lib64/libc.so.6'), 'GLIBC')
+        steam_runtime_glibc_ver = max_symbol_version(File.join(mroot, 'usr/lib/x86_64-linux-gnu/libc.so.6'), 'GLIBC')
+
+        if linux_base_glibc_ver > steam_runtime_glibc_ver
+          pwarn "Linux base [#{EMUL_PATH}] has newer glibc, copying to chroot [#{mroot}]"
+        end
+
+        linux_base_glibcxx_ver    = max_symbol_version(File.join(EMUL_PATH, 'usr/lib64/libstdc++.so.6'), 'GLIBCXX')
+        steam_runtime_glibcxx_ver = max_symbol_version(File.join(mroot, 'usr/lib/x86_64-linux-gnu/libstdc++.so.6'), 'GLIBCXX')
+
+        if linux_base_glibcxx_ver > steam_runtime_glibcxx_ver
+          pwarn "Linux base [#{EMUL_PATH}] has newer libstdc++, copying to chroot [#{mroot}]"
+        end
+
         for source_dir, dest_dir in {
           File.join(EMUL_PATH, 'usr/lib64') => File.join(mroot, 'usr/lib/x86_64-linux-gnu'),
           File.join(EMUL_PATH, 'usr/lib')   => File.join(mroot, 'usr/lib/i386-linux-gnu')
@@ -140,12 +155,24 @@ if try_mount('tmpfs', 'tmpfs', mroot, 'nocover')
           mounts << mount('nullfs', File.join(source_dir, 'dri'), File.join(dest_dir, 'dri'))
           mounts << mount('nullfs', File.join(source_dir, 'gbm'), File.join(dest_dir, 'gbm'))
 
-          for source in Dir[
-            # glibc
-            File.join(source_dir, '{ld-linux.so.2,ld-linux-x86-64.so.2}'),
-            File.join(source_dir, 'lib{anl,BrokenLocale,c,dl,m,memusage,mvec,nss_{compat,dns,files},SegFault,pcprofile,pthread,resolv,rt,thread_db,util}.so*'),
+          files_to_copy = []
+
+          # glibc
+          if linux_base_glibc_ver > steam_runtime_glibc_ver
+            files_to_copy += Dir[
+              File.join(source_dir, '{ld-linux.so.2,ld-linux-x86-64.so.2}'),
+              File.join(source_dir, 'lib{anl,BrokenLocale,c,dl,m,memusage,mvec,nss_{compat,dns,files},SegFault,pcprofile,pthread,resolv,rt,thread_db,util}.so*')
+            ]
+          end
+
+          # libstdc++
+          if linux_base_glibcxx_ver > steam_runtime_glibcxx_ver
+            files_to_copy += Dir[File.join(source_dir, 'libstdc++.so*')]
+          end
+
+          files_to_copy += Dir[
             # other dependencies
-            File.join(source_dir, 'lib{edit,ffi,LLVM*,stdc++}.so*'),
+            File.join(source_dir, 'lib{edit,ffi,LLVM*}.so*'),
             # linux-rl9-wayland
             File.join(source_dir, 'libwayland-{client,cursor,egl,server}.so*'),
             # linux-rl9-libglvnd
@@ -155,8 +182,10 @@ if try_mount('tmpfs', 'tmpfs', mroot, 'nocover')
             # linux-rl9-dri
             File.join(source_dir, 'lib{EGL_mesa,GLU,GLX_{mesa,system},VkLayer_*,gallium-*,gbm,glapi,glut,vulkan_{intel,lvp,radeon},xatracker}.so*'),
             # linux-rl9-spirv-tools
-            File.join(source_dir, 'lib{SPIRV-*}.so*')
+            File.join(source_dir, 'libSPIRV-*.so*')
           ]
+
+          for source in files_to_copy
             target = File.join(dest_dir, File.basename(source))
             #~ pwarn "#{source} -> #{target}"
             if File.symlink?(source)

@@ -231,3 +231,46 @@ def extract_debs(dpkgs, dist_path, target_path)
 
   threads.each(&:join)
 end
+
+class VersionTuple
+
+  include Comparable
+
+  attr :major
+  attr :minor
+  attr :patch
+
+  def initialize(major, minor, patch)
+    @major = major
+    @minor = minor
+    @patch = patch
+  end
+
+  def self.from_str(str)
+    if str =~ /^\d+(?:\.\d+(?:\.\d+|)|)$/
+      major, minor, patch = str.split('.').map(&:to_i)
+      minor ||= 0
+      patch ||= 0
+      self.new(major, minor, patch)
+    else
+      raise "#{str} doesn't look like a version string"
+    end
+  end
+
+  def to_s
+    "#{@major}.#{@minor}.#{@patch}"
+  end
+
+  def <=>(other)
+    result = @major <=> other.major
+    result = @minor <=> other.minor if result == 0
+    result = @patch <=> other.patch if result == 0
+    result
+  end
+end
+
+def max_symbol_version(library_path, prefix)
+  IO.popen(['readelf', '-s', library_path]) do |io|
+    io.read.scan(/@#{prefix}_([\d.]+) /).map{|str| VersionTuple.from_str(str[0])}.max
+  end
+end
