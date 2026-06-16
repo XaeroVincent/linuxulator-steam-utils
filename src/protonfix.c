@@ -89,7 +89,6 @@ int execvp(const char* file, char* const argv[]) {
 
   if (str_ends_with(file, "/wine-preloader") &&
     argv[0] != NULL && argv[1] != NULL && str_ends_with(argv[1], "/wine")) {
-    unsetenv("WINELOADERNOEXEC");
     return libc_execvp("env", argv);
   }
 

@@ -270,7 +270,11 @@ class VersionTuple
 end
 
 def max_symbol_version(library_path, prefix)
-  IO.popen(['readelf', '-s', library_path]) do |io|
-    io.read.scan(/@#{prefix}_([\d.]+) /).map{|str| VersionTuple.from_str(str[0])}.max
+  if File.exist?(library_path)
+    IO.popen(['readelf', '-s', library_path]) do |io|
+      io.read.scan(/@#{prefix}_([\d.]+)(?:\s|$)/).map{|str| VersionTuple.from_str(str[0])}.max
+    end
+  else
+    raise "#{library_path} doesn't exist"
   end
 end
