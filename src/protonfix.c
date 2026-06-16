@@ -2,6 +2,8 @@
 
 #include <assert.h>
 #include <dlfcn.h>
+#include <errno.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,6 +53,48 @@ unsigned short wine_ldt_alloc_fs() {
 }
 
 #endif
+
+/* we don't want to allow Proton 11 to launch wine-preloader */
+
+static int (*libc_execv) (const char*, char* const []) = NULL;
+static int (*libc_execvp)(const char*, char* const []) = NULL;
+
+__attribute__((constructor))
+static void init_libc_func_pointers() {
+  libc_execv  = dlsym(RTLD_NEXT, "execv");
+  libc_execvp = dlsym(RTLD_NEXT, "execvp");
+}
+
+static inline bool str_ends_with(const char* str, const char* suffix) {
+  int str_len    = strlen(str);
+  int suffix_len = strlen(suffix);
+  return str_len >= suffix_len ? strcmp(str + str_len - suffix_len, suffix) == 0 : false;
+}
+
+int execv(const char* path, char* const argv[]) {
+
+  //~ fprintf(stderr, "%s: path = %s\n", __func__, path);
+
+  if (str_ends_with(path, "/wine64-preloader")) {
+    errno = ENOENT;
+    return -1;
+  }
+
+  return libc_execv(path, argv);
+}
+
+int execvp(const char* file, char* const argv[]) {
+
+  //~ fprintf(stderr, "%s: file = %s\n", __func__, file);
+
+  if (str_ends_with(file, "/wine-preloader") &&
+    argv[0] != NULL && argv[1] != NULL && str_ends_with(argv[1], "/wine")) {
+    unsetenv("WINELOADERNOEXEC");
+    return libc_execvp("env", argv);
+  }
+
+  return libc_execvp(file, argv);
+}
 
 /* ??? */
 

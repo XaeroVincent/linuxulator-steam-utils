@@ -41,6 +41,8 @@ end
 wrapper = case ENV['LSU_DEBUG']
   when 'ktrace'
     ['/usr/bin/ktrace', '-i', '-d']
+  when 'truss'
+    ['/usr/bin/truss', '-f', '-H']
   else
     []
 end

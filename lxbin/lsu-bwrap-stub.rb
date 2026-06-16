@@ -9,7 +9,8 @@ PROTON_APP_IDS = [
   '2180100', # Proton Hotfix
   '2348590', # Proton 8.0
   '2805730', # Proton 9.0
-  '3658110'  # Proton 10.0 (Beta)
+  '3658110', # Proton 10.0 (Beta)
+  '4628710'  # Proton 11.0
 ]
 
 # This is just Steam being stupid (vs the user), so no warning
