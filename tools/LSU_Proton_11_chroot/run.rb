@@ -6,9 +6,25 @@ require_relative '../../bin/.utils'
 PROTON_DIR = 'Proton 11.0'
 SLR_DIR    = 'SteamLinuxRuntime_4'
 
-#TODO: sanity checks for ntsync
-
 def run(args)
+
+  if system('kldstat -q -m ntsync')
+
+    ntsync_requirements = []
+
+    if !system('kldstat -q -m linux_ntsync')
+      ntsync_requirements << 'kldload linux_ntsync'
+    end
+
+    if `sysctl -q -n compat.linux.default_openfiles`.to_i <= 1024
+      ntsync_requirements << 'raise compat.linux.default_openfiles (sysctl) limit'
+    end
+
+    if !ntsync_requirements.empty?
+      perr "You might want to #{ntsync_requirements.join(' and ')} to use ntsync."
+    end
+  end
+
   proton_path, steamapp_lib_path = find_steamapp_with_library_path(PROTON_DIR)
   if not proton_path
     pwarn "Can't find #{PROTON_DIR}"
