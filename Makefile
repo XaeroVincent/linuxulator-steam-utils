@@ -50,7 +50,7 @@ $(BUILD_DIR)/lib$(b)/fakenm/libnm-glib.so.4: $(BUILD_DIR)/lib$(b)/fakenm/libnm.s
 
 $(BUILD_DIR)/lib$(b)/fakepulse/libpulse.so.0: src/fakepulse.c
 	mkdir -p $(BUILD_DIR)/lib$(b)/fakepulse
-	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -o $(.TARGET) src/fakepulse.c
+	/compat/linux/bin/cc -m$(b) $(CFLAGS) -fPIC -shared -Wl,--version-script=src/libpulse.map -o $(.TARGET) src/fakepulse.c
 
 $(BUILD_DIR)/lib$(b)/fakeudev/libudev.so.0: src/fakeudev.c
 	mkdir -p $(BUILD_DIR)/lib$(b)/fakeudev
@@ -114,7 +114,7 @@ install:
 	install -d `dirname $(PREFIX)/$(PROJECT)/${f:C|$(BUILD_DIR)/(.*)|\1|}`
 	install $(f) $(PREFIX)/$(PROJECT)/${f:C|$(BUILD_DIR)/(.*)|\1|}
 .endfor
-	install bin/.dpkgs.rb bin/.utils.rb bin/lsu-* bin/steam $(PREFIX)/$(PROJECT)/bin
+	install bin/.dpkgs.rb bin/.utils.rb bin/lsu-* bin/steam bin/fix-gamepad-permissions $(PREFIX)/$(PROJECT)/bin
 	install \
  lxbin/curl-config \
  lxbin/dbus-launch \
@@ -128,7 +128,7 @@ install:
  lxbin/xrandr \
  lxbin/zenity \
  $(PREFIX)/$(PROJECT)/lxbin
-.for t in LSU_FreeBSD_Wine LSU_Proton_8_chroot LSU_Scout_chroot LSU_Sniper_chroot
+.for t in LSU_FreeBSD_Wine LSU_FreeBSD_Wine_11 LSU_FreeBSD_Wine_9 LSU_Proton_11_chroot LSU_Proton_8_chroot LSU_Scout_chroot LSU_Sniper_chroot
 	install -d $(PREFIX)/$(PROJECT)/tools/$(t)
 	install -m 0644 tools/$(t)/compatibilitytool.vdf $(PREFIX)/$(PROJECT)/tools/$(t)
 	install -m 0644 tools/$(t)/toolmanifest.vdf      $(PREFIX)/$(PROJECT)/tools/$(t)

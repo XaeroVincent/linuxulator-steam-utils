@@ -82,7 +82,8 @@ To install dependencies on FreeBSD 14:
 1. Run `/usr/local/wine-proton/bin/pkg32.sh install wine-proton mesa-dri`.
 1. In Steam install the Proton version corresponding to the wine-proton's port version (only major.minor numbers have to match).
 
-On FreeBSD 15+ you should either build the i386 variant of wine-proton yourself or use PROTON_USE_WOW64=1
-with the patch for wine-proton from https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=288475.
+On FreeBSD 15+ you should either use pkg32.sh or use PROTON_USE_WOW64=1 with the Proton 10 or 11 / Experimental versions here:
 
-To enable the tool right click a game title in Steam, click Properties, click Compatibility, select "FreeBSD Wine (emulators/wine-proton)".
+https://github.com/FreeBSD-Proton-Experimental-Porters/FreeBSD-Proton-Experimental
+
+To enable the tool right click a game title in Steam, click Properties, click Compatibility, select "FreeBSD Proton XX. (wine-proton-XX)".

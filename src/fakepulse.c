@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <stdio.h>
 
-#define FAKE(name) void name() { fprintf(stderr, "fakepulse: %s\n", #name); assert(0); }
+#define STR(x) #x
+#define SYMVER(name, version) __asm__(".symver " STR(name) "," STR(name) "@" STR(version))
+#define FAKE(name) void name() { fprintf(stderr, "fakepulse: %s\n", #name); assert(0); } SYMVER(name, PULSE_0)
 
 FAKE(pa_ascii_filter);
 FAKE(pa_ascii_valid);
