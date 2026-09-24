@@ -58,7 +58,11 @@ if !KNOWN_VERSIONS[PROTON_VERSION]
   exit(1)
 end
 
-if PROTON_VERSION.to_i < 10 || ENV['PROTON_USE_WOW64'] != '1'
+if PROTON_VERSION.to_i > 10
+  ENV['WINEDLLOVERRIDES'] = 'vrclient,vrclient_x64='
+end
+
+if PROTON_VERSION.to_i < 10 || (ENV['PROTON_USE_WOW64'] != '1')
   wine32_version = `#{wine32_bin} --version`.chomp.delete_prefix("wine-")
   if PROTON_VERSION != wine32_version
     perr "#{wine64_bin} (#{PROTON_VERSION}) and #{wine32_bin} (#{wine32_version}) versions must match each other."
@@ -166,7 +170,7 @@ def set_up()
           paths = Dir.chdir(File.join(PROTON_DIR, 'files')) do
             Dir[
               '{lib*,lib/x86_64-linux-gnu}/libopenxr_loader.so.*',
-              'lib*/libsteam_api.so',
+              'lib*/libsteam_api.so', # < Proton 10
               'lib*/vkd3d',
               'lib*/wine/*/*steam*',
               'lib*/wine/*/vrclient*',
@@ -184,6 +188,9 @@ def set_up()
               'share/wine/fonts',
               'share/wine/wine.inf'
             ]
+          end
+          if PROTON_VERSION.to_i > 10
+            paths.append('share/openxr/wineopenxr64.json')
           end
           for path in paths
             target = File.join("#{target_dir}.tmp", path)
